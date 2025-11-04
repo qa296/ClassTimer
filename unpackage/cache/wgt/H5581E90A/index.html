@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>课程提醒</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: pan-y;
+        }
+        .container {
+            display: flex;
+            width: 200%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        .screen {
+            width: 50%;
+            height: 100%;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-screen {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .status {
+            font-size: 8vw;
+            margin-bottom: 2vh;
+        }
+        .time {
+            font-size: 28vw;
+            font-weight: bold;
+            margin: 5vh 0;
+            letter-spacing: 2px;
+            line-height: 0.9;
+        }
+        .lesson {
+            font-size: 8vw;
+            margin: 0 5vw;
+            word-break: break-word;
+            text-align: center;
+        }
+        .settings-screen {
+            overflow-y: auto;
+        }
+        h3 {
+            margin: 15px 0;
+            text-align: center;
+            font-size: 6vw;
+        }
+        .import-section {
+            margin: 15px 0;
+        }
+        .import-method {
+            margin-bottom: 15px;
+        }
+        .import-method button {
+            padding: 8px 12px;
+            margin-right: 10px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 4vw;
+        }
+        .import-method button.active {
+            background: #555;
+        }
+        .file-input {
+            margin: 10px 0;
+            width: 100%;
+            font-size: 4vw;
+        }
+        .text-input {
+            width: 100%;
+            height: 30vh;
+            padding: 10px;
+            margin: 10px 0;
+            background: #222;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 3px;
+            font-family: monospace;
+            resize: none;
+            font-size: 4vw;
+        }
+        .offset-container {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 5vw;
+        }
+        .offset-input {
+            width: 20vw;
+            padding: 5px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 3px;
+            font-size: 5vw;
+        }
+        pre {
+            background: #222;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 3.5vw;
+            margin: 10px 0;
+        }
+        .no-class {
+            color: #888;
+
+        }
+        .submit-btn {
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 5vw;
+            width: 100%;
+        }
+        p {
+            font-size: 4vw;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <!-- 主屏幕 -->
+        <div class="screen main-screen">
+            <div class="status" id="status">下一节课</div>
+            <div class="time" id="time">--:--</div>
+            <div class="lesson" id="lessonName">--</div>
+
+        </div>
+
+        <!-- 设置屏幕 -->
+        <div class="screen settings-screen">
+            <h3>导入课表</h3>
+            
+            <div class="import-section">
+                <div class="import-method">
+                    <button id="fileMethodBtn" class="active">文件导入</button>
+                    <button id="textMethodBtn">文本输入</button>
+                </div>
+                
+                <div id="fileImport" class="import-content">
+                    <input type="file" id="scheduleFile" class="file-input" accept=".json">
+                    <p style="font-size:3.5vw;color:#888; margin-top: 5px;">请从手机文件系统中选择JSON文件<br>（若无法选择文件：<br>1. 尝试在文件管理器中分享至本应用<br>2. 确认应用有文件访问权限<br>3. 确保文件扩展名为.json）</p>
+                    <p>请上传JSON格式的课表文件，格式如下：</p>
+                    <pre>
+{
+    "schedule": [
+        {
+            "day": 1,  // 星期几(1-7,1=周一)
+            "classes": [
+                {
+                    "name": "数学",
+                    "start": "08:00",  // 24小时制
+                    "end": "08:45"
+                },
+                {
+                    "name": "语文",
+                    "start": "09:00",
+                    "end": "09:45"
+                }
+                // 更多课程...
+            ]
+        }
+        // 更多星期...
+    ]
+}
+                    </pre>
+                </div>
+                
+                <div id="textImport" class="import-content" style="display:none;">
+                    <textarea id="scheduleText" class="text-input" placeholder="请粘贴JSON格式的课表..."></textarea>
+                    <button id="submitTextBtn" class="submit-btn">提交课表</button>
+                </div>
+            </div>
+
+            <h3>时间偏移设置</h3>
+            <div class="offset-container">
+                <span>铃声提前/延后：</span>
+                <input type="number" id="offset" class="offset-input" value="0"> 秒
+            </div>
+            <p style="font-size:3.5vw;color:#888;">(正数表示提前响铃，负数表示延后)</p>
+
+            <h3>时间偏移计算器</h3>
+            <div class="calculator-container">
+                <p>建议偏移：<span id="suggestedOffset">0</span> 秒</p>
+                <button id="fillOffsetBtn" class="submit-btn">填写</button>
+            </div>
+            
+
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let touchStartX = 0;
+        let currentScreen = 0;
+        let scheduleData = null;
+        let offset = 0;
+        let updateInterval = null;
+        let suggestedOffset = 0;
+
+        // DOM元素
+        const container = document.getElementById('container');
+        const statusEl = document.getElementById('status');
+        const timeEl = document.getElementById('time');
+        const lessonEl = document.getElementById('lessonName');
+        const scheduleFileInput = document.getElementById('scheduleFile');
+        const scheduleTextInput = document.getElementById('scheduleText');
+        const offsetInput = document.getElementById('offset');
+        const fileMethodBtn = document.getElementById('fileMethodBtn');
+        const textMethodBtn = document.getElementById('textMethodBtn');
+        const fileImportDiv = document.getElementById('fileImport');
+        const textImportDiv = document.getElementById('textImport');
+        const submitTextBtn = document.getElementById('submitTextBtn');
+        const suggestedOffsetEl = document.getElementById('suggestedOffset');
+        const fillOffsetBtn = document.getElementById('fillOffsetBtn');
+
+        // 初始化
+        function init() {
+            loadSavedData();
+            setupEventListeners();
+            startUpdateInterval();
+        }
+
+        // 加载保存的数据
+        function loadSavedData() {
+            // 加载课表
+            const savedSchedule = localStorage.getItem('classSchedule');
+            if (savedSchedule) {
+                try {
+                    scheduleData = JSON.parse(savedSchedule);
+                    // 在文本输入框中显示当前课表
+                    scheduleTextInput.value = JSON.stringify(scheduleData, null, 2);
+                } catch (e) {
+                    console.error('解析课表失败:', e);
+                }
+            }
+            
+            // 加载偏移设置
+            const savedOffset = localStorage.getItem('timeOffset');
+            offset = savedOffset ? parseInt(savedOffset) : 0;
+            offsetInput.value = offset;
+        }
+
+        // 设置事件监听
+        function setupEventListeners() {
+            // 触摸事件
+            document.addEventListener('touchstart', handleTouchStart, { passive: true });
+            document.addEventListener('touchend', handleTouchEnd, { passive: true });
+            
+            // 文件输入
+            scheduleFileInput.addEventListener('change', handleFileUpload);
+            
+            // 文本提交
+            submitTextBtn.addEventListener('click', handleTextSubmit);
+            
+            // 导入方式切换
+            fileMethodBtn.addEventListener('click', () => switchImportMethod('file'));
+            textMethodBtn.addEventListener('click', () => switchImportMethod('text'));
+            
+            // 偏移设置
+            offsetInput.addEventListener('change', handleOffsetChange);
+
+            // 填写偏移
+            fillOffsetBtn.addEventListener('click', handleFillOffset);
+        }
+
+        // 切换导入方式
+        function switchImportMethod(method) {
+            if (method === 'file') {
+                fileMethodBtn.classList.add('active');
+                textMethodBtn.classList.remove('active');
+                fileImportDiv.style.display = 'block';
+                textImportDiv.style.display = 'none';
+            } else {
+                fileMethodBtn.classList.remove('active');
+                textMethodBtn.classList.add('active');
+                fileImportDiv.style.display = 'none';
+                textImportDiv.style.display = 'block';
+            }
+        }
+
+        // 触摸开始处理
+        function handleTouchStart(e) {
+            touchStartX = e.touches[0].clientX;
+        }
+
+        // 触摸结束处理
+        function handleTouchEnd(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) > 50) { // 滑动阈值
+                if (diff > 0 && currentScreen === 0) { // 向左滑
+                    showScreen(1);
+                } else if (diff < 0 && currentScreen === 1) { // 向右滑
+                    showScreen(0);
+                }
+            }
+        }
+
+        // 显示指定屏幕
+        function showScreen(screenIndex) {
+            currentScreen = screenIndex;
+            container.style.transform = `translateX(-${screenIndex * 50}%)`;
+            
+            // 切换到主屏幕时立即更新状态
+            if (screenIndex === 0) {
+                updateStatus();
+            }
+        }
+
+        // 处理文件上传
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) {
+                alert('请选择文件');
+                return;
+            }
+
+            // 检查文件类型
+            if (!file.name.toLowerCase().endsWith('.json')) {
+                alert('请选择JSON格式的文件');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    console.log('文件内容:', content); // 调试信息
+                    const data = JSON.parse(content);
+                    console.log('解析后的数据:', data); // 调试信息
+
+                    if (validateSchedule(data)) {
+                        saveScheduleData(data);
+                    } else {
+                        alert('课表格式不正确，请检查JSON格式是否符合要求');
+                    }
+                } catch (error) {
+                    console.error('解析错误:', error);
+                    alert('解析课表失败: ' + error.message + '\n请检查文件是否为有效的JSON格式');
+                }
+            };
+            reader.onerror = function() {
+                alert('读取文件失败');
+            };
+            reader.readAsText(file);
+        }
+
+        // 处理文本提交
+        function handleTextSubmit() {
+            try {
+                const data = JSON.parse(scheduleTextInput.value);
+                if (validateSchedule(data)) {
+                    saveScheduleData(data);
+                } else {
+                    alert('课表格式不正确');
+                }
+            } catch (error) {
+                alert('解析课表失败: ' + error.message);
+            }
+        }
+
+        // 保存课表数据
+        function saveScheduleData(data) {
+            scheduleData = data;
+            localStorage.setItem('classSchedule', JSON.stringify(data));
+            alert('课表导入成功！');
+            updateStatus();
+        }
+
+        // 验证课表格式
+        function validateSchedule(data) {
+            if (!data) {
+                console.error('数据为空');
+                return false;
+            }
+
+            if (!data.schedule || !Array.isArray(data.schedule)) {
+                console.error('缺少schedule数组或schedule不是数组');
+                return false;
+            }
+
+            for (let i = 0; i < data.schedule.length; i++) {
+                const daySchedule = data.schedule[i];
+
+                if (typeof daySchedule.day !== 'number' || daySchedule.day < 1 || daySchedule.day > 7) {
+                    console.error(`第${i+1}个星期数据day字段无效:`, daySchedule.day);
+                    return false;
+                }
+
+                if (!Array.isArray(daySchedule.classes)) {
+                    console.error(`第${i+1}个星期数据classes不是数组`);
+                    return false;
+                }
+
+                for (let j = 0; j < daySchedule.classes.length; j++) {
+                    const cls = daySchedule.classes[j];
+
+                    if (!cls.name || typeof cls.name !== 'string') {
+                        console.error(`第${i+1}个星期的第${j+1}节课name字段无效:`, cls.name);
+                        return false;
+                    }
+
+                    if (!cls.start || typeof cls.start !== 'string' || !/^([01]\d|2[0-3]):([0-5]\d)$/.test(cls.start)) {
+                        console.error(`第${i+1}个星期的第${j+1}节课start时间格式无效:`, cls.start);
+                        return false;
+                    }
+
+                    if (!cls.end || typeof cls.end !== 'string' || !/^([01]\d|2[0-3]):([0-5]\d)$/.test(cls.end)) {
+                        console.error(`第${i+1}个星期的第${j+1}节课end时间格式无效:`, cls.end);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        // 处理设置变化
+        function handleOffsetChange(e) {
+            const newOffset = parseInt(e.target.value) || 0;
+            if (newOffset !== offset) {
+                offset = newOffset;
+                localStorage.setItem('timeOffset', offset.toString());
+                updateStatus();
+            }
+        }
+
+        // 处理填写偏移
+        function handleFillOffset() {
+            offsetInput.value = suggestedOffset;
+            handleOffsetChange({target: offsetInput});
+        }
+
+        // 开始定时更新
+        function startUpdateInterval() {
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(updateStatus, 1000);
+            updateStatus(); // 立即执行一次
+        }
+
+        // 更新状态显示
+        function updateStatus() {
+            if (!scheduleData) {
+                timeEl.textContent = '--:--';
+                lessonEl.textContent = '未导入课表';
+                lessonEl.className = 'lesson no-class';
+                return;
+            }
+
+            const now = new Date();
+            const currentDay = now.getDay() === 0 ? 7 : now.getDay(); // 转换为1-7格式
+            const currentTime = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+
+            let nearestEvent = null;
+            let minDiff = Infinity;
+
+            // 查找当前或下一个最近的课程事件(开始或结束)
+            for (const daySchedule of scheduleData.schedule) {
+                if (daySchedule.day === currentDay) {
+                    for (const cls of daySchedule.classes) {
+                        // 解析开始和结束时间
+                        const [startH, startM] = cls.start.split(':').map(Number);
+                        const [endH, endM] = cls.end.split(':').map(Number);
+                        
+                        const startTime = startH * 3600 + startM * 60 - offset;
+                        const endTime = endH * 3600 + endM * 60 - offset;
+
+                        // 检查课程开始时间
+                        if (startTime > currentTime && startTime - currentTime < minDiff) {
+                            minDiff = startTime - currentTime;
+                            nearestEvent = {
+                                name: cls.name,
+                                type: 'start',
+                                time: startTime,
+                                originalTime: startH * 3600 + startM * 60
+                            };
+                        }
+
+                        // 检查课程结束时间
+                        if (endTime > currentTime && endTime - currentTime < minDiff) {
+                            minDiff = endTime - currentTime;
+                            nearestEvent = {
+                                name: cls.name,
+                                type: 'end',
+                                time: endTime,
+                                originalTime: endH * 3600 + endM * 60
+                            };
+                        }
+                    }
+                }
+            }
+
+            // 更新显示
+            if (nearestEvent) {
+                statusEl.textContent = nearestEvent.type === 'start' ? '距离上课' : '距离下课';
+                lessonEl.textContent = nearestEvent.name;
+                lessonEl.className = 'lesson';
+
+                if (minDiff <= 120) {
+                    timeEl.textContent = `${minDiff}秒`;
+                } else {
+                    const minutes = Math.floor(minDiff / 60);
+                    const seconds = minDiff % 60;
+                    timeEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                }
+
+                // 计算建议偏移
+                suggestedOffset = nearestEvent.originalTime - currentTime;
+                suggestedOffsetEl.textContent = suggestedOffset;
+            } else {
+                statusEl.textContent = '今日课程';
+                timeEl.textContent = '--:--';
+                lessonEl.textContent = '已结束';
+                lessonEl.className = 'lesson no-class';
+
+                // 无课程时重置建议偏移
+                suggestedOffset = 0;
+                suggestedOffsetEl.textContent = suggestedOffset;
+            }
+        }
+
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>
