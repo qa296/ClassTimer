@@ -1,0 +1,10 @@
+npm warn Unknown env config "python". This will stop working in the next major version of npm.
+
+> class-timer@1.0.0 web
+> expo start --web
+
+Starting project at /home/engine/project/class-timer
+React Compiler enabled
+Starting Metro Bundler
+Waiting on http://localhost:8081
+Logs for your project will appear below.
