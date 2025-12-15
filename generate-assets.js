@@ -1,0 +1,35 @@
+const fs = require('fs');
+const path = require('path');
+
+// Create a minimal 1x1 PNG file (transparent pixel)
+const pngBuffer = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, // PNG signature
+  0x00, 0x00, 0x00, 0x0d, // IHDR chunk size
+  0x49, 0x48, 0x44, 0x52, // "IHDR"
+  0x00, 0x00, 0x00, 0x01, // width: 1
+  0x00, 0x00, 0x00, 0x01, // height: 1
+  0x08, 0x06, 0x00, 0x00, 0x00, // bit depth, color type, etc.
+  0x1f, 0x15, 0xc4, 0x89, // CRC
+  0x00, 0x00, 0x00, 0x0a, // IDAT chunk size
+  0x49, 0x44, 0x41, 0x54, // "IDAT"
+  0x78, 0x9c, 0x63, 0xf8, 0x0f, 0x00, // compressed data
+  0x00, 0x01, 0x01, 0x01, // more data
+  0x18, 0xdd, 0x8d, 0xb4, // CRC
+  0x00, 0x00, 0x00, 0x00, // IEND chunk size
+  0x49, 0x45, 0x4e, 0x44, // "IEND"
+  0xae, 0x42, 0x60, 0x82, // CRC
+]);
+
+// Create assets directory if it doesn't exist
+const assetsDir = path.join(__dirname, 'assets');
+if (!fs.existsSync(assetsDir)) {
+  fs.mkdirSync(assetsDir, { recursive: true });
+}
+
+// Write placeholder PNGs
+fs.writeFileSync(path.join(assetsDir, 'icon.png'), pngBuffer);
+fs.writeFileSync(path.join(assetsDir, 'splash.png'), pngBuffer);
+fs.writeFileSync(path.join(assetsDir, 'adaptive-icon.png'), pngBuffer);
+fs.writeFileSync(path.join(assetsDir, 'favicon.png'), pngBuffer);
+
+console.log('Assets generated successfully');
