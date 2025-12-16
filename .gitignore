@@ -1,0 +1,39 @@
+# Flutter specific
+classtimer/build/
+classtimer/.dart_tool/
+classtimer/.flutter-plugins
+classtimer/.flutter-plugins-dependencies
+classtimer/pubspec.lock
+
+# Android specific
+classtimer/android/.gradle/
+classtimer/android/build/
+classtimer/android/**/build/
+**.apk
+!classtimer.apk
+
+# Development
+*.log
+.DS_Store
+Thumbs.db
+
+# Flutter and Dart
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# Android
+.gradle/
+build/
+local.properties
+*.iml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.DS_Store
+/build
+
+# Platform specific
+android-sdk/
+flutter/
+flutter.tar.xz
