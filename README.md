@@ -50,11 +50,53 @@
 - **SharedPreferences**: 本地数据存储
 - **Material Design**: UI组件库
 
-## APK文件
+## 构建APK
 
-构建的APK文件：`classtimer.apk`
+### 环境要求
 
-这是一个调试版本的APK，可以在Android设备上直接安装使用。
+- Flutter SDK 3.19.6+
+- Android SDK (API 30+)
+- OpenJDK 17+
+- Android设备或模拟器
+
+### 构建步骤
+
+1. **安装Flutter SDK**
+```bash
+# 解压Flutter SDK
+tar xf flutter.tar.xz
+
+# 设置环境变量
+export PATH="$PATH:/path/to/flutter/bin"
+```
+
+2. **配置Android环境**
+```bash
+# 设置环境变量
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export ANDROID_HOME=/path/to/android-sdk
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+```
+
+3. **构建APK**
+```bash
+cd classtimer
+flutter clean
+flutter pub get
+flutter build apk --debug
+```
+
+构建完成后，APK文件位于：
+`classtimer/build/app/outputs/flutter-apk/app-debug.apk`
+
+### 安装APK
+
+构建完成后，将APK文件传输到Android设备并安装：
+
+```bash
+# 启用USB调试和未知来源安装
+adb install build/app/outputs/flutter-apk/app-debug.apk
+```
 
 ## 开发环境
 

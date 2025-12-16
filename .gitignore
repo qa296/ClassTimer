@@ -9,8 +9,9 @@ classtimer/pubspec.lock
 classtimer/android/.gradle/
 classtimer/android/build/
 classtimer/android/**/build/
-**.apk
-!classtimer.apk
+
+# APK files (too large for GitHub)
+*.apk
 
 # Development
 *.log
