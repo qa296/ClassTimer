@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "ClassTimer",
+    "slug": "ClassTimer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.svg",
+    "scheme": "classtimer",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000",
+        "foregroundImage": "./assets/images/icon.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "splashScreen": {
+        "backgroundColor": "#000000",
+        "resizeMode": "contain",
+        "imageWidth": 0
+      },
+      "package": "com.classtimer.app"
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/icon.svg"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
