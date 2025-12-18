@@ -1,0 +1,24 @@
+# OS / Editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# uni-app / HBuilderX
+.hbuilderx/
+unpackage/
+dist/
+
+# Node (if used)
+node_modules/
+
+# Temporary
+*.tmp
+*.swp
