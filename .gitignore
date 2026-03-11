@@ -1,0 +1,28 @@
+# Build outputs
+*.o
+*.so
+*.exe
+classtimer
+rust_version/classtimer
+c_version/libs/
+
+# Android
+*.dex
+*.class
+bin/
+obj/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
+target/
+
+# OS
+.DS_Store
+Thumbs.db
