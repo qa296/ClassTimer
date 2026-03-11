@@ -1,0 +1,32 @@
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+
+# Build artifacts (but keep the main APK)
+build/
+dist/
+.gradle/
+*.class
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# But allow the deliverable APK
+!native_c_app/apk/*.apk
